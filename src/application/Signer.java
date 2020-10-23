@@ -1,12 +1,7 @@
 package application;
 
 import javafx.application.Application;
-import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
-import javafx.fxml.FXMLLoader;
-import javafx.scene.Scene;
 import javafx.scene.control.Alert;
-import javafx.scene.control.DialogPane;
 import javafx.stage.Stage;
 /**
  * Java program for signing pdf documents. Prints absolute path to signature to console on success. Prints -1 to console on failure.
@@ -32,7 +27,6 @@ public class Signer extends Application {
 			System.err.println("Error: invalid number of arguments provided");
 			System.out.println("-1");
 			Alert alert = new Alert(Alert.AlertType.ERROR);
-            DialogPane dialogPane = alert.getDialogPane();
             alert.setTitle("PDF Signer");
             alert.setHeaderText("Error opening PDF file");
             alert.setContentText("Invalid program arguments.");

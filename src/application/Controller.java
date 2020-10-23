@@ -5,13 +5,13 @@ import java.util.Base64;
 import java.util.ResourceBundle;
 
 import org.apache.commons.io.FileUtils;
+import org.apache.pdfbox.io.RandomAccessFile;
+import org.apache.pdfbox.pdfparser.PDFParser;
 
 import java.io.File;
 import java.io.IOException;
 
 import javafx.application.Platform;
-import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
 import javafx.concurrent.Worker;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -21,9 +21,7 @@ import javafx.scene.Scene;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.Alert;
-import javafx.scene.control.DialogPane;
 import javafx.scene.control.TextField;
-import javafx.scene.paint.Paint;
 import javafx.scene.web.WebEngine;
 import javafx.scene.web.WebView;
 import javafx.stage.Stage;
@@ -122,19 +120,26 @@ public class Controller implements Initializable {
 			                 // this pdf file will be opened on application startup
 			                 if (newValue == Worker.State.SUCCEEDED) {
 			                     try {
+			                    	 //pdf validation
+			                    	 RandomAccessFile accessFile = new RandomAccessFile(new File(Signer.filepath), "r");
+			                    	 PDFParser parser = new PDFParser(accessFile);
+			                    	 parser.setLenient(false);
+			                    	 parser.parse();
+			                    	 parser.getPDDocument().close();
+			                    	 
 			                         // readFileToByteArray() comes from commons-io library 
 			                         byte[] data = FileUtils.readFileToByteArray(new File(Signer.filepath));
 			                         String base64 = Base64.getEncoder().encodeToString(data);
 			                         // call JS function from Java code
 			                         engine.executeScript("openFileFromBase64('" + base64 + "')");
+			                         
 			                     } catch (IOException e) {
-			                    	 //file doesn't exist. invalid/corrupt files are handled natively, only need to print to stderr
+			                    	 //file validation fails or file doesn't exist
 			                    	 System.err.println("Error opening " + Signer.filepath + ": " + e);
 			                         Alert alert = new Alert(Alert.AlertType.ERROR);
-			                         DialogPane dialogPane = alert.getDialogPane();
 			                         alert.setTitle("PDF Signer");
 			                         alert.setHeaderText("Error opening PDF file");
-			                         alert.setContentText("There was an error opening the PDF file. The specified file does not exist.");
+			                         alert.setContentText("There was an error opening the PDF file. The specified file does not exist or is corrupt.");
 			                         alert.showAndWait();
 			                         System.out.println("-1");
 			                         System.exit(0);
@@ -164,7 +169,6 @@ public class Controller implements Initializable {
 		//if one or both of the fields are empty
 		if (blank || nameField.getText().isEmpty()) {
 			Alert alert = new Alert(Alert.AlertType.WARNING);
-            DialogPane dialogPane = alert.getDialogPane();
             alert.setTitle("PDF Signer");
             alert.setHeaderText("Empty Fields");
             alert.setContentText("Please provide your signature and printed full name");
