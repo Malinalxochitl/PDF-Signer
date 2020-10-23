@@ -1,6 +1,8 @@
 package application;
 
 import javafx.application.Application;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
@@ -19,7 +21,8 @@ public class Signer extends Application {
 	static String filepath = null;
 
 	/**
-	 * @param primaryStage the primary stage of the application
+	 * hands control over to the controller
+	 * @param stage the primary stage of the application
 	 * @throws Exception if stage does not start
 	 */
 	@Override
@@ -36,9 +39,18 @@ public class Signer extends Application {
             alert.showAndWait();
             return;
 		}
-		stage.setScene(new Scene(FXMLLoader.load(getClass().getResource("display.fxml"))));
+		Controller.start(stage);
+		
+		/*stage.setScene(new Scene(FXMLLoader.load(getClass().getResource("display.fxml"))));
 		stage.setTitle("PDF Signer");
-		stage.show();
+		stage.getScene().widthProperty().addListener(
+				new ChangeListener() {
+					public void changed(ObservableValue observable, Object oldValue, Object newValue) {
+						double width = (Double) newValue;
+						
+					}
+				});
+		stage.show();*/
 	}
 	
 	/**

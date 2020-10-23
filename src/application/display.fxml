@@ -3,7 +3,6 @@
 <?import javafx.scene.canvas.Canvas?>
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.Label?>
-<?import javafx.scene.control.ScrollPane?>
 <?import javafx.scene.control.SplitPane?>
 <?import javafx.scene.control.TextField?>
 <?import javafx.scene.layout.AnchorPane?>
@@ -16,17 +15,17 @@
 
 <BorderPane xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="application.Controller">
    <center>
-      <SplitPane dividerPositions="0.682896379525593" orientation="VERTICAL" prefHeight="803.0" BorderPane.alignment="CENTER">
+      <SplitPane dividerPositions="0.682896379525593" orientation="VERTICAL" prefHeight="803.0" prefWidth="598.0" BorderPane.alignment="CENTER">
         <items>
-          <AnchorPane prefHeight="546.0" prefWidth="598.0">
+            <VBox maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308">
                <children>
-                  <ScrollPane fitToHeight="true" fitToWidth="true" prefHeight="546.0" prefWidth="598.0">
-                     <content>
-                        <WebView fx:id="web" prefHeight="543.0" prefWidth="595.0" />
-                     </content>
-                  </ScrollPane>
+                  <HBox VBox.vgrow="ALWAYS">
+                     <children>
+                        <WebView fx:id="web" minHeight="-1" minWidth="-1.0" prefHeight="-1.0" prefWidth="-1.0" HBox.hgrow="ALWAYS" />
+                     </children>
+                  </HBox>
                </children>
-            </AnchorPane>
+            </VBox>
           <AnchorPane prefHeight="100.0" prefWidth="160.0">
                <children>
                   <VBox alignment="CENTER" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="252.0" prefWidth="598.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0">
