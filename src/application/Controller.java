@@ -53,9 +53,6 @@ public class Controller implements Initializable {
 	@FXML
 	private WebView web;
 	
-	@FXML
-	
-	
 	/**
 	 * checks whether the signature field is blank
 	 */

@@ -40,17 +40,6 @@ public class Signer extends Application {
             return;
 		}
 		Controller.start(stage);
-		
-		/*stage.setScene(new Scene(FXMLLoader.load(getClass().getResource("display.fxml"))));
-		stage.setTitle("PDF Signer");
-		stage.getScene().widthProperty().addListener(
-				new ChangeListener() {
-					public void changed(ObservableValue observable, Object oldValue, Object newValue) {
-						double width = (Double) newValue;
-						
-					}
-				});
-		stage.show();*/
 	}
 	
 	/**
