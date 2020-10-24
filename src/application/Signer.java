@@ -4,7 +4,10 @@ import javafx.application.Application;
 import javafx.scene.control.Alert;
 import javafx.stage.Stage;
 /**
- * Java program for signing pdf documents. Prints absolute path to signature to console on success. Prints -1 to console on failure.
+ * Java program for signing pdf documents. Prints absolute path of saved signature to console on success. Prints -1 to console on failure.
+ * Dependencies: apache commons io
+ * 				 apache commons logging
+ * 				 apache pdfbox
  * @author Joel Kurian
  * 
  */
