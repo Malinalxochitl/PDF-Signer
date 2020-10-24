@@ -4,15 +4,19 @@ import java.net.URL;
 import java.util.Base64;
 import java.util.ResourceBundle;
 
+import javax.imageio.ImageIO;
+
 import org.apache.commons.io.FileUtils;
 import org.apache.pdfbox.io.RandomAccessFile;
 import org.apache.pdfbox.pdfparser.PDFParser;
 
 import java.io.File;
+import java.io.FileWriter;
 import java.io.IOException;
 
 import javafx.application.Platform;
 import javafx.concurrent.Worker;
+import javafx.embed.swing.SwingFXUtils;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
@@ -22,6 +26,8 @@ import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.Alert;
 import javafx.scene.control.TextField;
+import javafx.scene.image.Image;
+import javafx.scene.image.WritableImage;
 import javafx.scene.web.WebEngine;
 import javafx.scene.web.WebView;
 import javafx.stage.Stage;
@@ -163,7 +169,7 @@ public class Controller implements Initializable {
 	}
 	     
 	/**
-	 * saves the drawn signature
+	 * saves the signature and name to disk, and then exits application
 	 */
 	public void saveSignature() {
 		//if one or both of the fields are empty
@@ -173,8 +179,55 @@ public class Controller implements Initializable {
             alert.setHeaderText("Empty Fields");
             alert.setContentText("Please provide your signature and printed full name");
             alert.showAndWait();
+            
+        //saves information and exit the application
 		} else {
+			int i = Signer.filepath.lastIndexOf("/");
+			String parentFolder = Signer.filepath.substring(0, i); //parent folder of pdf file
+			String pdfName = Signer.filepath.substring(i+1, Signer.filepath.length()-4); //name of the pdf
 			
+			//saves signature to disk
+			try { 
+				WritableImage wi = new WritableImage((int)canvas.getWidth(), (int)canvas.getHeight());
+				
+				Image snapshot = canvas.snapshot(null, wi);
+				ImageIO.write(SwingFXUtils.fromFXImage(snapshot, null), "png", new File(parentFolder, pdfName+"-SIG.png"));
+				
+			//signature failed to save
+			} catch (IOException e) {
+				System.err.println("Failed to save image: " + e);
+                Alert alert = new Alert(Alert.AlertType.ERROR);
+                alert.setTitle("PDF Signer");
+                alert.setHeaderText("Error saving image");
+                alert.setContentText("There was an error saving the signature.");
+                alert.showAndWait();
+                System.out.println("-1");
+                System.exit(0);
+			}
+			
+			//saves the name to disk
+			try {
+				File file = new File(parentFolder, pdfName+"-NAME.txt");
+				file.delete();
+				file.createNewFile();
+				FileWriter writer = new FileWriter(file, false);
+				writer.write(nameField.getText());
+				writer.close();
+			//name failed to save
+			} catch (IOException e) {
+				System.err.println("Failed to save name: " + e);
+                Alert alert = new Alert(Alert.AlertType.ERROR);
+                alert.setTitle("PDF Signer");
+                alert.setHeaderText("Error saving name");
+                alert.setContentText("There was an error saving the printed name.");
+                alert.showAndWait();
+                System.out.println("-1");
+                System.exit(0);
+			}
+			
+			//return before exit
+			System.out.println(parentFolder+'/'+pdfName+"-SIG.png");
+			stage.close();
 		}
 	}
 	
