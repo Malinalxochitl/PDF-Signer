@@ -39,7 +39,7 @@
                               </Label>
                               <Pane prefHeight="87.0" prefWidth="314.0" style="-fx-border-color: black; -fx-background-color: white;">
                                  <children>
-                                    <Canvas fx:id="canvas" blendMode="SRC_ATOP" height="99.0" layoutY="1.0" pickOnBounds="true" width="314.0" />
+                                    <Canvas fx:id="canvas" cache="true" cacheHint="SPEED" height="99.0" layoutY="1.0" pickOnBounds="true" width="314.0" />
                                  </children>
                               </Pane>
                               <Button mnemonicParsing="false" onAction="#clearCanvas" text="Clear" />

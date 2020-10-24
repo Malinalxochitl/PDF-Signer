@@ -7,8 +7,6 @@ import java.util.ResourceBundle;
 import javax.imageio.ImageIO;
 
 import org.apache.commons.io.FileUtils;
-import org.apache.pdfbox.io.RandomAccessFile;
-import org.apache.pdfbox.pdfparser.PDFParser;
 
 import java.io.File;
 import java.io.FileWriter;
@@ -61,6 +59,11 @@ public class Controller implements Initializable {
 	 * checks whether the signature field is blank
 	 */
 	private boolean blank = true;
+	
+	/**
+	 * previous mouse coordinates for drawing
+	 */
+	private double prevX=  -1, prevY = -1;
 	
 	/**
 	 * application stage
@@ -126,13 +129,6 @@ public class Controller implements Initializable {
 			                 // this pdf file will be opened on application startup
 			                 if (newValue == Worker.State.SUCCEEDED) {
 			                     try {
-			                    	 //pdf validation
-			                    	 RandomAccessFile accessFile = new RandomAccessFile(new File(Signer.filepath), "r");
-			                    	 PDFParser parser = new PDFParser(accessFile);
-			                    	 parser.setLenient(false);
-			                    	 parser.parse();
-			                    	 parser.getPDDocument().close();
-			                    	 
 			                         // readFileToByteArray() comes from commons-io library 
 			                         byte[] data = FileUtils.readFileToByteArray(new File(Signer.filepath));
 			                         String base64 = Base64.getEncoder().encodeToString(data);
@@ -160,11 +156,30 @@ public class Controller implements Initializable {
 		GraphicsContext g = canvas.getGraphicsContext2D();
 		
 		canvas.setOnMouseDragged(e -> {
-			double x = e.getX() - 1;
-			double y = e.getY() - 1;
+			
+			double x = e.getX() - 1; //x coordinate
+			double y = e.getY() - 1; //y coordinate
+			
 			g.setFill(javafx.scene.paint.Color.BLACK);
-			g.fillRect(x, y, 2, 2);
+			
+			if (prevX == -1) { //start of line
+				g.fillRect(x, y, 2, 2);
+				prevX = x;
+				prevY = y;
+			} else { //continuing the line
+				g.strokeLine(prevX, prevY, x, y);
+				prevX = x;
+				prevY = y;
+			}
 			blank = false;
+		});
+		
+		/**
+		 * resets previous values when line ends
+		 */
+		canvas.setOnMouseReleased(e -> {
+			prevX = -1;
+			prevY = -1;
 		});
 	}
 	     
@@ -182,16 +197,18 @@ public class Controller implements Initializable {
             
         //saves information and exit the application
 		} else {
-			int i = Signer.filepath.lastIndexOf("/");
-			String parentFolder = Signer.filepath.substring(0, i); //parent folder of pdf file
-			String pdfName = Signer.filepath.substring(i+1, Signer.filepath.length()-4); //name of the pdf
+			File temp = new File(Signer.filepath);
+			String parentFolder = temp.getParent();
+			String pdfName = temp.getName().substring(0, temp.getName().length()-4);
+			//System.out.println(parentFolder);
+			//System.out.println(pdfName);
 			
 			//saves signature to disk
 			try { 
 				WritableImage wi = new WritableImage((int)canvas.getWidth(), (int)canvas.getHeight());
 				
 				Image snapshot = canvas.snapshot(null, wi);
-				ImageIO.write(SwingFXUtils.fromFXImage(snapshot, null), "png", new File(parentFolder, pdfName+"-SIG.png"));
+				ImageIO.write(SwingFXUtils.fromFXImage(snapshot, null), "png",temp = new File(parentFolder, pdfName+"-SIG.png"));
 				
 			//signature failed to save
 			} catch (IOException e) {
@@ -226,7 +243,7 @@ public class Controller implements Initializable {
 			}
 			
 			//return before exit
-			System.out.println(parentFolder+'/'+pdfName+"-SIG.png");
+			System.out.println(parentFolder+'\\'+pdfName+"-SIG.png");
 			stage.close();
 		}
 	}
@@ -245,7 +262,7 @@ public class Controller implements Initializable {
 	 */
 	public void showKeyboard() {
 		try {
-			Runtime.getRuntime().exec("cmd /c osk");
+			Runtime.getRuntime().exec("cmd /c C:\\Windows\\System32\\osk.exe");
 			nameField.requestFocus();
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
