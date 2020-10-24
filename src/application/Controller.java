@@ -63,7 +63,7 @@ public class Controller implements Initializable {
 	/**
 	 * previous mouse coordinates for drawing
 	 */
-	private double prevX=  -1, prevY = -1;
+	private double prevX = -1, prevY = -1;
 	
 	/**
 	 * application stage
@@ -155,6 +155,7 @@ public class Controller implements Initializable {
 		//initializing the signature drawing area
 		GraphicsContext g = canvas.getGraphicsContext2D();
 		
+		//draws a line when you drag the mouse
 		canvas.setOnMouseDragged(e -> {
 			
 			double x = e.getX() - 1; //x coordinate
@@ -174,9 +175,20 @@ public class Controller implements Initializable {
 			blank = false;
 		});
 		
-		/**
-		 * resets previous values when line ends
-		 */
+		//lets you draw a single dot
+		canvas.setOnMousePressed(e -> {
+			
+			double x = e.getX() - 1; //x coordinate
+			double y = e.getY() - 1; //y coordinate
+			
+			g.setFill(javafx.scene.paint.Color.BLACK);
+			
+			g.fillRect(x, y, 2, 2);
+			
+			blank = false;
+		});
+		
+		//resets previous values when line ends
 		canvas.setOnMouseReleased(e -> {
 			prevX = -1;
 			prevY = -1;
