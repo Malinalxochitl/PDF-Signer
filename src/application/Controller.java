@@ -2,12 +2,16 @@ package application;
 
 import java.net.URL;
 import java.util.Base64;
+import java.util.List;
 import java.util.ResourceBundle;
 
 import javax.imageio.ImageIO;
 
 import org.apache.commons.io.FileUtils;
 
+import java.awt.HeadlessException;
+import java.awt.MouseInfo;
+import java.awt.Point;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -18,6 +22,7 @@ import javafx.embed.swing.SwingFXUtils;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
+import javafx.geometry.Rectangle2D;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.canvas.Canvas;
@@ -28,6 +33,7 @@ import javafx.scene.image.Image;
 import javafx.scene.image.WritableImage;
 import javafx.scene.web.WebEngine;
 import javafx.scene.web.WebView;
+import javafx.stage.Screen;
 import javafx.stage.Stage;
 import netscape.javascript.JSObject;
 
@@ -93,6 +99,34 @@ public class Controller implements Initializable {
 		control = loader.getController();
 		Controller.stage = primaryStage;
 		
+		//makes the application start where the mouse is located
+		double x = -1, y = -1;
+		try {
+			Point p = MouseInfo.getPointerInfo().getLocation();
+			List<Screen> screenList = Screen.getScreens();
+			
+			if (p != null && screenList != null && screenList.size() > 1) {
+				Rectangle2D bounds;
+				
+				for (Screen screen : screenList) {
+					bounds = screen.getVisualBounds();
+					
+					if (bounds.contains(p.getX(), p.getY())) {
+						x = bounds.getMinX() + ((bounds.getMaxX() - bounds.getMinX() - scene.getWidth()) / 2);
+						y = bounds.getMinY() + ((bounds.getMaxY() - bounds.getMinY() - scene.getHeight()) / 2);
+						
+						stage.setX(x);
+						stage.setY(y);
+						break;
+					}
+				}
+			}
+		} catch (HeadlessException e) {
+			e.printStackTrace();
+		}
+				
+		
+		stage.centerOnScreen();
 		stage.setTitle("PDF Signer");
 		stage.setScene(scene);
 		stage.show();
